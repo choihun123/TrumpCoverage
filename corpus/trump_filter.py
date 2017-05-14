@@ -3,7 +3,7 @@ from glob import glob
 import json
 
 # take in news outlet json file
-files = glob("json/*.json")
+files = glob("new-json/*.json")
 for file_name in files:
     # skip already filtered files
     if "trump" in file_name:
