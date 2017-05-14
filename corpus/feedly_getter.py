@@ -5,15 +5,20 @@ Get lists of articles on site from feedly.
 import subprocess
 import json
 
-NUM_ARTICLE_REQS = 10
+NUM_ARTICLE_REQS = 20
 BASE_URL_0 = "https://feedly.com/v3/streams/contents?streamId=feed%2F{outlet_rss_url}&count=1000&ranked=newest&similar=true"
 CONTINUATION_BASE = "&continuation="
 BASE_URL_2 = "&ck=1492623749498&ct=feedly.desktop&cv=30.0.1320"
 OUTPUT_FILENAME = "output.json"
 
 GET_ARTICLES_SCRIPT_FILENAME = "get_articles.bash"
+
 START_TSTAMP = "1484870399"
 START_FEEDLY_TSTAMP = int(START_TSTAMP + "000")
+
+END_TSTAMP = "1492905600"
+END_FEEDLY_TSTAMP = int(END_TSTAMP + "000")
+
 
 OUTLETS_AND_URLS = {
     "nytimes": "http%3A%2F%2Fwww.nytimes.com%2Fservices%2Fxml%2Frss%2Fnyt%2FHomePage.xml",
@@ -46,21 +51,20 @@ def get_articles_of_outlet(outlet_url):
         print 'len_items', len(items)
         for item in items:
             if int(item['published']) < START_FEEDLY_TSTAMP:
-                print 'skipped'
-                break
+                # import ipdb; ipdb.set_trace()
+                print 'skipped early article'
+                continue
+                # break
+            elif int(item['published']) > END_FEEDLY_TSTAMP:
+                print 'skipped late article'
+                continue
             all_items.append(item)
-        else:
-            continue # Skip the next line (break) if we haven't broke out of this last loop
-        break # If we break out of the inner loop, then break out of this one
-        
-    else:
-        print "did 10 iterations"
     return all_items
 
 def save_article_lists(outlets_and_urls):
     for outlet, url in outlets_and_urls.iteritems():
         feedly_list = get_articles_of_outlet(url)
-        filename = outlet + '_feedly_list.json'
+        filename = outlet + '_feedly_list_fixed.json'
         with open(filename, 'w+') as fp:
             fp.write(json.dumps(feedly_list))
 
@@ -71,4 +75,5 @@ def main():
 if __name__ == '__main__':
     main()
         
+    
     

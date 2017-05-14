@@ -7,7 +7,7 @@ from pymongo import MongoClient
 import feedly_getter
 
 NO_CANONICAL = -1
-NUM_THREADS = 20
+NUM_THREADS = 40
 
 MONGO_HOST = '140.180.188.53'
 MONGO_PORT = 27017
@@ -32,7 +32,7 @@ def get_text_for_article(item):
 
 def thread_get_articles():
     client = MongoClient(MONGO_HOST, MONGO_PORT)
-    db = client.trump
+    db = client.trumpBak
     collection = getattr(db, OUTLET)
     article = collection.find_one_and_delete({'newspaper_article_text': None})
     while article is not None:
@@ -42,7 +42,6 @@ def thread_get_articles():
         article = collection.find_one_and_delete({'newspaper_article_text': None})
 
 def save_outlet_articles():
-    # collection = getattr(db, outlet)
     threads = []
     for _ in xrange(NUM_THREADS): 
         thread = Thread(target=thread_get_articles)
