@@ -3,7 +3,7 @@ from glob import glob
 import json
 
 # take in news outlet json file
-files = glob("new-json/*.json")
+files = glob("last-json/*.json")
 for file_name in files:
     # skip already filtered files
     if "trump" in file_name:
@@ -24,7 +24,7 @@ for file_name in files:
             continue
 
         # look in title and body text
-        if "President Trump" in page_text or "POTUS" in page_text \
+        if "Trump" in page_text or "POTUS" in page_text \
             or "President Donald Trump" in page_text \
             or "President Trump" in page_title or "POTUS" in page_title \
             or "President Donald Trump" in page_title:
