@@ -1,4 +1,6 @@
 *~
 *\#*
 corpus/last-json/wapo.json
+corpus/stanford-corenlp-full-2016-10-31/
+corpus/*.json
 *.pyc
