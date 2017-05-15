@@ -1,5 +1,6 @@
 import sys
 from threading import Thread
+from multiprocessing import Process
 
 import newspaper
 from pymongo import MongoClient
@@ -7,7 +8,7 @@ from pymongo import MongoClient
 import feedly_getter
 
 NO_CANONICAL = -1
-NUM_THREADS = 40
+NUM_THREADS = 4
 
 MONGO_HOST = '140.180.188.53'
 MONGO_PORT = 27017
@@ -44,7 +45,7 @@ def thread_get_articles():
 def save_outlet_articles():
     threads = []
     for _ in xrange(NUM_THREADS): 
-        thread = Thread(target=thread_get_articles)
+        thread = Process(target=thread_get_articles)
         thread.start()
         threads.append(thread)
         
