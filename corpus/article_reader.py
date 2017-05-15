@@ -11,6 +11,25 @@ from spacy.en import English
 import sys
 import time
 
+def get_res_tokens(resolution_dict):
+    tokens = resolution_dict['tokens']
+    resolved_tokens = [token_resolution['to'] for token_resolution in tokens]
+    return resolved_tokens
+
+def get_res_token_by_idx(idx, res_dict):
+    tokens = res_dict['tokens']
+    for token in tokens:
+        if token['idx'] == idx:
+            return token['to']
+        
+    return None
+
+def is_s_in_res_token(s, idx, res_dict):
+    res_token = get_res_token_by_idx(idx, res_dict)
+    if res_token is None:
+        return False
+    return s.lower() in res_token.lower()
+
 # take in news outlet json file
 file_name = sys.argv[1]
 with open(file_name) as data_file:    
@@ -29,23 +48,38 @@ y = []
 daily_count = {}
 daily_average = {}
 
-for news_page in outlet:
+for article_count, news_page in enumerate(outlet):
+    print 'article_count', article_count
     page_text = news_page['newspaper_article_text']
+    resolutions = news_page['resolutions']
     sentence_list = tokenize.sent_tokenize(page_text)
     average_sentiment = 0.0
     count = 0
 
-    for sentence in sentence_list:
+    for resolution_dict, sentence in zip(resolutions, sentence_list):
         # filter sentences that don't have Trump in them
+        res_tokens = get_res_tokens(resolution_dict)
+        should_continue = False
         if "Trump" not in sentence:
+            should_continue = True
+            resolved_tokens = get_res_tokens(resolution_dict)
+            for resolved_token in resolved_tokens:
+                if "Trump" in resolved_token:
+                    should_continue = False
+                    break
+                elif "trump":
+                    should_continue = False
+                    break
+                    
+        if should_continue:
             continue
-
+        
         # filter out sentences that don't have Trump as the subject
         parsedData = parser(sentence)
-        sub_toks = [tok for tok in parsedData if (tok.dep_ == "nsubj") ]
-        for tok in sub_toks:
-            if "Trump" in tok.orth_ or "POTUS" in tok.orth_:
-                #print sentence
+        idx_and_sub_toks = [(idx, tok) for idx, tok in enumerate(parsedData) if (tok.dep_ == "nsubj")]
+        for idx, tok in idx_and_sub_toks:
+            lower_orth = tok.orth_.lower()
+            if "trump" in lower_orth or "potus" in lower_orth or is_s_in_res_token(lower_orth, idx, resolution_dict):
                 ss = sid.polarity_scores(sentence)
                 average_sentiment += ss['compound']
                 count += 1
