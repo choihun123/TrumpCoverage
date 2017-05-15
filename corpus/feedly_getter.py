@@ -21,11 +21,13 @@ END_FEEDLY_TSTAMP = int(END_TSTAMP + "000")
 
 
 OUTLETS_AND_URLS = {
-    "nytimes": "http%3A%2F%2Fwww.nytimes.com%2Fservices%2Fxml%2Frss%2Fnyt%2FHomePage.xml",
-    "cnn": "http%3A%2F%2Frss.cnn.com%2Frss%2Fcnn_topstories.rss",
-    "fox_news": "http%3A%2F%2Fwww.foxnews.com%2Fxmlfeed%2Frss%2F0%2C4313%2C0%2C00.rss",
-    "huffington_post": "http%3A%2F%2Fwww.huffingtonpost.com%2Ffeeds%2Fverticals%2Fpolitics%2Findex.xml",
-    "breitbart": "https%3A%2F%2Fwp.breitbart.com%2Ffeed%2Fatom%2F",
+    # "nytimes": "http%3A%2F%2Fwww.nytimes.com%2Fservices%2Fxml%2Frss%2Fnyt%2FHomePage.xml",
+    # "cnn": "http%3A%2F%2Frss.cnn.com%2Frss%2Fcnn_topstories.rss",
+    # "fox_news": "http%3A%2F%2Fwww.foxnews.com%2Fxmlfeed%2Frss%2F0%2C4313%2C0%2C00.rss",
+    # "huffington_post": "http%3A%2F%2Fwww.huffingtonpost.com%2Ffeeds%2Fverticals%2Fpolitics%2Findex.xml",
+    # "breitbart": "http%3A%2F%2Ffeeds.feedburner.com%2Fbreitbart",
+    "wsj": "http%3A%2F%2Fonline.wsj.com%2Fxml%2Frss%2F3_8068.xml",
+    "wapo": "http%3A%2F%2Fwww.washingtonpost.com%2Frss%2Fhomepage"
 }
 
 def feedly_tstamp_to_regular(feedly_tstamp_s):
@@ -64,7 +66,7 @@ def get_articles_of_outlet(outlet_url):
 def save_article_lists(outlets_and_urls):
     for outlet, url in outlets_and_urls.iteritems():
         feedly_list = get_articles_of_outlet(url)
-        filename = outlet + '_feedly_list_fixed.json'
+        filename = outlet + '_feedly_list.json'
         with open(filename, 'w+') as fp:
             fp.write(json.dumps(feedly_list))
 
