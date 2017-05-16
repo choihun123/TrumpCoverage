@@ -32,6 +32,7 @@ def is_s_in_res_token(s, idx, res_dict):
 
 # take in news outlet json file
 file_name = sys.argv[1]
+title = sys.argv[2]
 with open(file_name) as data_file:    
     outlet = json.load(data_file)
 
@@ -49,6 +50,12 @@ daily_count = {}
 daily_average = {}
 
 for article_count, news_page in enumerate(outlet):
+    date = datetime.datetime.fromtimestamp(news_page['published']/1000).strftime('%Y/%m/%d')
+    _, m, d = date.split('/')
+    m = int(m)
+    d = int(d)
+    if m == 1 and d == 19:
+        continue # skip the 19th articles
     print 'article_count', article_count
     page_text = news_page['newspaper_article_text']
     resolutions = news_page['resolutions']
@@ -56,6 +63,9 @@ for article_count, news_page in enumerate(outlet):
     average_sentiment = 0.0
     count = 0
 
+    if not resolutions:
+        print 'no resolutions'
+        continue
     for resolution_dict, sentence in zip(resolutions, sentence_list):
         # filter sentences that don't have Trump in them
         res_tokens = get_res_tokens(resolution_dict)
@@ -106,9 +116,8 @@ np_y = np.array(y)
 np_x_ticks = np.array(x_ticks)
 fig = plt.figure(1, figsize=(20,10))
 plt.xticks(x, x_ticks, rotation=90)
-title_index = file_name.find("_trump.json")
-title = file_name[5:title_index] + " sentiment analysis"
-plt.title(title)
+plot_title = title + " sentiment analysis"
+plt.title(plot_title)
 
 # linear best fit
 slope, intercept, r_value, p_value, std_err = stats.linregress(np_x, np_y)
@@ -117,3 +126,4 @@ line = slope*np_x+intercept
 # plot
 plt.plot(x, y, "o--", x, line)
 plt.show()
+savefig(title)
